@@ -1,3 +1,4 @@
 *.swp
 *.pyc
 .env/*
+g2_cs231n.pem

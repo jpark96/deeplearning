@@ -248,6 +248,7 @@ class FullyConnectedNet(object):
         ############################################################################
         affine_cache_lst = []
         relu_cache_lst = []
+        dropout_cache_lst = []
         
         loss_reg_term = 0
         dim_list = self.dim_list
@@ -268,6 +269,10 @@ class FullyConnectedNet(object):
                 
             out, relu_cache = relu_forward(out)
             relu_cache_lst.append(relu_cache)
+            
+            if self.use_dropout:
+                out, dropout_cache = dropout_forward(out, self.dropout_param)
+                dropout_cache_lst.append(dropout_cache)
         
         ############################################################################
         #                             END OF YOUR CODE                             #
@@ -304,6 +309,9 @@ class FullyConnectedNet(object):
         grads[weight_str], grads[bias_str] = dweight, dbias
 #        print(eval("range(len(dim_list))[-2:0:-1]"))
         for i in range(len(dim_list))[-2:0:-1]:
+            if self.use_dropout:
+                dloss = dropout_backward(dloss, dropout_cache_lst.pop())
+            
             dloss = relu_backward(dloss, relu_cache_lst.pop())
             
             weight_str = 'W' + str(i)
